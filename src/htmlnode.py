@@ -33,13 +33,19 @@ class LeafNode(HTMLNode):
 
 class ParentNode(HTMLNode):
     def __init__(self, tag, children, props=None):
-        super().__init__(tag, children, props)
+        super().__init__(tag=tag, children=children, props=props)
     
     def to_html(self):
         if self.tag == None:
             raise ValueError('A valid HTML tag must be given')
         
-        if self.children == None:
+        if len(self.children) < 1 or self.children == None:
             raise ValueError('Parent nodes must containt some valid children')
         
+        final_html = ''
+
+        for child in self.children:
+            final_html += child.to_html()
+        
+        return f'<{self.tag}>{final_html}</{self.tag}>'
         
