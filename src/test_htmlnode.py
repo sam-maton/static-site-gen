@@ -47,6 +47,14 @@ class TestParentNode(unittest.TestCase):
         div = ParentNode('div', [ul])
 
         self.assertEqual(div.to_html(), '<div><ul><li>First list item</li><li>Second list item</li><li>Third list item</li></ul></div>')
+    
+    def test_to_html_with_props(self):
+        a = LeafNode('a', 'first link', {"href": "https://www.boot.dev", "target": "_blank"})
+        li = ParentNode('li', [a])
+        ul = ParentNode('ul', [li], {"class": "ul-class"})
+        div = ParentNode('div', [ul])
+
+        self.assertEqual(div.to_html(), '<div><ul class="ul-class"><li><a href="https://www.boot.dev" target="_blank">first link</a></li></ul></div>')
 
 
 
