@@ -40,6 +40,8 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             raise Exception('Invalid markdown.')
         
         for i in range(len(sections)):
+            if sections[i] == "":
+                continue
             if i % 2 == 0:
                 split_nodes.append(TextNode(sections[i], text_type_text))
             else:
