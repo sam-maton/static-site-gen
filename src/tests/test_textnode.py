@@ -1,3 +1,5 @@
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import unittest
 from utils import(
     text_type_text,
@@ -6,7 +8,8 @@ from utils import(
     text_type_code,
     text_type_image,
     text_type_link,
-    text_node_to_html_node
+    text_node_to_html_node,
+    split_nodes_delimiter
 )
 from textnode import TextNode
 
@@ -67,6 +70,32 @@ class TestTextNodeToHTMLNode(unittest.TestCase):
         with self.assertRaises(Exception):
             text_node_to_html_node(node)
 
+class TestSplitNodesDelimiter(unittest.TestCase):
+    def test_delim_bold(self):
+        node = TextNode("This is text with a **bolded** word", text_type_text)
+        new_nodes = split_nodes_delimiter([node], "**", text_type_bold)
+        self.assertListEqual(
+            [
+                TextNode("This is text with a ", text_type_text),
+                TextNode("bolded", text_type_bold),
+                TextNode(" word", text_type_text),
+            ],
+            new_nodes,
+        )
+    def test_delim_bold_double(self):
+        node = TextNode(
+            "This is text with a **bolded** word and **another**", text_type_text
+        )
+        new_nodes = split_nodes_delimiter([node], "**", text_type_bold)
+        self.assertListEqual(
+            [
+                TextNode("This is text with a ", text_type_text),
+                TextNode("bolded", text_type_bold),
+                TextNode(" word and ", text_type_text),
+                TextNode("another", text_type_bold),
+            ],
+            new_nodes,
+        )
 
 if __name__ == "__main__":
     unittest.main()
