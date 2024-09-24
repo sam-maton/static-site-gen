@@ -2,7 +2,7 @@ import os, sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import unittest
 from textnode import TextNode
-from utils import (
+from text_utils import (
     extract_markdown_images, 
     extract_markdown_links, 
     split_nodes_image, 

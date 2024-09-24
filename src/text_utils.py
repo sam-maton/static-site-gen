@@ -138,27 +138,3 @@ def text_to_textnodes(text):
     nodes = split_nodes_image(nodes)
 
     return(nodes)
-
-def markdown_to_blocks(markdown):
-    split_blocks = markdown.split('\n')
-    formatted_blocks = []
-    for block in split_blocks:
-        if block.strip() == "":
-            continue
-        else:
-            formatted_blocks.append(block.strip())
-    return formatted_blocks
-
-block = '''
-# This is a heading
-
-This is a paragraph of text. It has some **bold** and *italic* words inside of it.
-
-* This is the first list item in a list block
-* This is a list item
-* This is another list item
-'''
-
-formatted = markdown_to_blocks(block)
-
-print(formatted)
