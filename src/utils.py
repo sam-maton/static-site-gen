@@ -130,18 +130,35 @@ def separate_images_from_text(text):
     return []
 
 def text_to_textnodes(text):
-    starting_node = TextNode(text, text_type_text)
-    bold_nodes = split_nodes_delimiter([starting_node], '**', text_type_bold)
-    italic_nodes = split_nodes_delimiter(bold_nodes, '*', text_type_italic)
-    code_nodes = split_nodes_delimiter(italic_nodes, '`', text_type_code)
-    link_nodes = split_nodes_link(code_nodes)
-    image_nodes = split_nodes_image(link_nodes)
+    nodes = [TextNode(text, text_type_text)]
+    nodes = split_nodes_delimiter(nodes, '**', text_type_bold)
+    nodes = split_nodes_delimiter(nodes, '*', text_type_italic)
+    nodes = split_nodes_delimiter(nodes, '`', text_type_code)
+    nodes = split_nodes_link(nodes)
+    nodes = split_nodes_image(nodes)
 
-    return(image_nodes)
+    return(nodes)
 
-string = 'This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)'
+def markdown_to_blocks(markdown):
+    split_blocks = markdown.split('\n')
+    formatted_blocks = []
+    for block in split_blocks:
+        if block.strip() == "":
+            continue
+        else:
+            formatted_blocks.append(block.strip())
+    return formatted_blocks
 
-converted = text_to_textnodes(string)
+block = '''
+# This is a heading
 
-for c in converted:
-    print(c)
+This is a paragraph of text. It has some **bold** and *italic* words inside of it.
+
+* This is the first list item in a list block
+* This is a list item
+* This is another list item
+'''
+
+formatted = markdown_to_blocks(block)
+
+print(formatted)
