@@ -1,4 +1,5 @@
 from htmlnode import LeafNode, ParentNode
+from text_utils import text_to_textnodes, text_node_to_html_node
 
 # Constants
 block_type_paragraph = "paragraph"
@@ -64,24 +65,110 @@ def block_to_block_type(block: str):
 
 def markdown_to_html_node(markdown):
     blocks = markdown_to_blocks(markdown)
+    children = []
 
-    for b in blocks:
-        print(block_to_block_type(b))
-        print('\n')
+    for block in blocks:
+        type = block_to_block_type(block)
+        match type:
+            case type if type == block_type_code:
+                children.append(code_to_html_node(block))
+            case type if type == block_type_heading:
+                blocks = block.split('/n')
+                for b in blocks:
+                    children.append(heading_to_html_node(b))
+            case type if type == block_type_quote:
+                children.append(quote_to_html_node(block))
+            case type if type == block_type_paragraph:
+                children.append(paragraph_to_html_node(block))
+            case type if type == block_type_ordered_list:
+                children.append(ol_to_html_node(block))
+            case type if type == block_type_unordered_list:
+                children.append(ul_to_html_node(block))
+    
+    return ParentNode('div', children)
 
+def paragraph_to_html_node(block):
+    lines = block.split("\n")
+    paragraph = " ".join(lines)
+    nodes = text_to_textnodes(paragraph)
 
-md = """
-This is **bolded** paragraph
+    paragraph_children = []
+    for n in nodes:
+        paragraph_children.append(text_node_to_html_node(n))
 
-This is another paragraph with *italic* text and `code` here
-This is the same paragraph on a new line
+    final_paragraph = ParentNode('p', paragraph_children)
+    return final_paragraph
 
-* This is a list
-* with items
+def code_to_html_node(block):
+    children = []
+    nodes = text_to_textnodes(block)
 
-1. list item 1
-2. list item 2
-3. list item 3
-"""
+    for n in nodes:
+        children.append(text_node_to_html_node(n))
 
-markdown_to_html_node(md)
+    second_parent = ParentNode('pre', children)
+    return second_parent
+
+def heading_to_html_node(block):
+    children = []
+    count = 0
+    for l in block:
+        if l == "#":
+            count += 1
+        else:
+            break
+    text_nodes = text_to_textnodes(block[count + 1:])
+    for node in text_nodes:
+        children.append(text_node_to_html_node(node))
+    
+    return ParentNode(f"h{count}", children)
+
+def quote_to_html_node(block):
+    children = []
+    lines = block.split('\n')
+
+    for i in range(len(lines)):
+        lines[i] = lines[i][1:]
+    
+    text_nodes = text_to_textnodes(''.join(lines).strip())
+
+    for node in text_nodes:
+        children.append(text_node_to_html_node(node))
+
+    return ParentNode('blockquote', children)
+
+def ul_to_html_node(block):
+    children = []
+    lines = block.split('\n')
+
+    for i in range(len(lines)):
+        lines[i] = lines[i][2:]
+
+    nodes = []
+    for l in lines:
+        text_nodes = text_to_textnodes(l)
+        html_nodes = list(map(lambda x: text_node_to_html_node(x), text_nodes))
+        nodes.append(html_nodes)
+
+    for n in nodes:
+        children.append(ParentNode('li', n))
+    
+    return ParentNode('ul', children)
+
+def ol_to_html_node(block):
+    children = []
+    lines = block.split('\n')
+
+    for i in range(len(lines)):
+        lines[i] = lines[i][3:]
+
+    nodes = []
+    for l in lines:
+        text_nodes = text_to_textnodes(l)
+        html_nodes = list(map(lambda x: text_node_to_html_node(x), text_nodes))
+        nodes.append(html_nodes)
+
+    for n in nodes:
+        children.append(ParentNode('li', n))
+    
+    return ParentNode('ol', children)
