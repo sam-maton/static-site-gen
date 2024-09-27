@@ -30,7 +30,6 @@ def copy_static_files(path):
         return files
 
     items: list[str] = get_items_to_create(path, [])
-
     for i in items:
         if os.path.isfile(i):
             shutil.copy(i, f"public{i.removeprefix(path)}")
@@ -61,3 +60,15 @@ def generate_page(from_path, template_path, dest_path):
     new_html = open(f"{dest_path}/index.html", "w")
     new_html.write(template)
     new_html.close()
+
+def generate_pages_reccursive(dir_path_content, template_path, des_dir_path):
+    if not os.path.exists(dir_path_content):
+        raise Exception('Invalid path')
+    
+    items = os.listdir(dir_path_content)
+
+    for i in items:
+        if os.path.isfile(f"{dir_path_content}/{i}"):
+            generate_page(f"{dir_path_content}/{i}", template_path, des_dir_path)
+        else:
+            generate_pages_reccursive(f"{dir_path_content}/{i}", template_path, f"{des_dir_path}/{i}")

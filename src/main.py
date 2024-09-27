@@ -1,13 +1,14 @@
 from textnode import TextNode
-from website_utils import copy_static_files, generate_page
+from website_utils import copy_static_files, generate_pages_reccursive
 import shutil
 import os
 
 def main():
-    shutil.rmtree('public')
+    if os.path.exists('public'):
+        shutil.rmtree('public')
     os.mkdir('public')
     copy_static_files('static')
-    generate_page('content/index.md', 'template.html', 'public')
+    generate_pages_reccursive('content', 'template.html', 'public')
 
 if __name__ == "__main__":
     main()
