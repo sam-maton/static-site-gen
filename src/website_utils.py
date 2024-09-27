@@ -15,9 +15,6 @@ def copy_static_files(path):
     if not os.path.exists(path):
         raise Exception('Invalid path')
     
-    shutil.rmtree('public')
-    os.mkdir('public')
-    
     def get_items_to_create(folder, files):
         items = os.listdir(folder)
 
@@ -54,8 +51,13 @@ def generate_page(from_path, template_path, dest_path):
     template = template.replace("{{ Title }}", title)
     template = template.replace("{{ Content }}", html)
 
-    print(template)
+    markdown_file.close()
+    template_file.close()
 
 
-
-generate_page('content/index.md', 'template.html', 'public')
+    if not os.path.exists(dest_path):
+        os.makedirs(dest_path)
+    
+    new_html = open(f"{dest_path}/index.html", "w")
+    new_html.write(template)
+    new_html.close()
